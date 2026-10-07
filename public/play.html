@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Either Live - Play</title>
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <main class="screen">
+
+
+        <!-- Header -->
+        <div class="eyebrow">
+            EITHER LIVE
+        </div>
+
+
+        <h1>
+            WOULD YOU RATHER?
+        </h1>
+
+
+        <!-- Question Number -->
+        <div
+            id="progress"
+            class="status"
+        >
+            QUESTION
+        </div>
+
+
+        <!-- Player Message -->
+        <p id="message">
+            Choose one.
+        </p>
+
+
+        <!-- Answer Buttons -->
+        <div class="choices">
+
+
+            <button
+                id="a"
+                class="choice"
+                type="button"
+            >
+                Loading...
+            </button>
+
+
+            <button
+                id="b"
+                class="choice"
+                type="button"
+            >
+                Loading...
+            </button>
+
+
+        </div>
+
+
+    </main>
+
+
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+
+
+    <!-- Player JavaScript -->
+    <script src="/js/player.js"></script>
+
+
+</body>
+
+</html>

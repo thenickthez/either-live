@@ -1,0 +1,105 @@
+* { box-sizing:border-box; }
+body { margin:0; font-family:Arial,Helvetica,sans-serif; background:#101114; color:#fff; min-height:100vh; }
+.wrap { width:min(1100px,92%); margin:auto; padding:36px 0; text-align:center; }
+.eyebrow { text-transform:uppercase; letter-spacing:.18em; opacity:.6; font-size:13px; }
+h1 { font-size:clamp(36px,6vw,76px); margin:18px 0 35px; }
+.choices { display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:stretch; }
+.choice { border:2px solid #fff; background:#191b20; color:#fff; padding:45px 25px; min-height:190px; display:flex; flex-direction:column; justify-content:center; font-size:clamp(24px,4vw,44px); font-weight:700; border-radius:18px; }
+.player .choice { cursor:pointer; min-height:220px; }
+.player .choice:disabled { opacity:.45; cursor:default; }
+.or { margin:20px; font-weight:bold; opacity:.6; }
+.status { margin:28px 0; font-size:22px; }
+.controls { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+button { padding:14px 24px; font-size:16px; font-weight:bold; border:0; border-radius:10px; cursor:pointer; }
+button.primary { background:#fff; color:#111; }
+button.secondary { background:#2b2e35; color:#fff; }
+.qr { position:fixed; right:22px; bottom:22px; background:#fff; color:#111; padding:10px; border-radius:12px; width:150px; }
+.qr img { width:100%; display:block; }
+.qr strong { display:block; margin-top:6px; }
+.bar { height:16px; background:#343740; border-radius:99px; overflow:hidden; margin-top:18px; }
+.fill { height:100%; background:#fff; width:0; transition:width .6s ease; }
+.percent { font-size:30px; margin-top:10px; }
+.message { margin-top:30px; font-size:24px; }
+@media(max-width:700px){ .choices{grid-template-columns:1fr;} .qr{position:static;margin:25px auto 0;} h1{margin-bottom:20px;} }
+
+/* ========================================
+   PLAYER SCREEN
+======================================== */
+
+.screen {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.screen .eyebrow {
+    text-align: center;
+}
+
+.screen h1 {
+    text-align: center;
+}
+
+.screen .status {
+    text-align: center;
+}
+
+.screen #message {
+    width: 100%;
+    text-align: center;
+    margin: 25px auto;
+}
+
+
+/* ========================================
+   PLAYER ANSWER BUTTONS
+======================================== */
+
+.screen .choices {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 24px;
+    margin: 0 auto;
+}
+
+.screen .choice {
+    flex: 1;
+    max-width: 540px;
+    min-height: 180px;
+    text-align: center;
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 700px) {
+
+    .screen {
+        padding: 20px 15px;
+        text-align: center;
+    }
+
+    .screen h1 {
+        text-align: center;
+    }
+
+    .screen .choices {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .screen .choice {
+        width: 100%;
+        max-width: 500px;
+        min-height: 130px;
+    }
+
+}

@@ -1,0 +1,8 @@
+{
+  "name": "either-live",
+  "version": "1.0.0",
+  "description": "Live either/or audience voting game",
+  "main": "server.js",
+  "scripts": {"start": "node server.js", "dev": "node server.js"},
+  "dependencies": {"express": "^5.1.0", "qrcode": "^1.5.4", "socket.io": "^4.8.1"}
+}
