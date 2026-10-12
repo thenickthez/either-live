@@ -1,4 +1,137 @@
-const socket=io(); const code=location.pathname.split('/').pop().toUpperCase();
-socket.emit('joinGame',{code,role:'host'}); document.querySelector('#qr').src=`/api/qr/${code}`; document.querySelector('#code').textContent=`GAME: ${code}`;
-socket.on('gameState',s=>{ document.querySelector('#progress').textContent=`QUESTION ${s.questionNumber} OF ${s.questionCount}`; document.querySelector('#aText').textContent=s.question.a; document.querySelector('#bText').textContent=s.question.b; document.querySelector('#status').textContent=`${s.total} ANSWER${s.total===1?'':'S'} RECEIVED`; document.querySelector('#aPct').textContent=s.revealed?`${s.aPct}%`:''; document.querySelector('#bPct').textContent=s.revealed?`${s.bPct}%`:''; document.querySelector('#aBar').style.width=s.revealed?`${s.aPct}%`:'0'; document.querySelector('#bBar').style.width=s.revealed?`${s.bPct}%`:'0'; });
-document.querySelector('#reveal').onclick=()=>socket.emit('reveal'); document.querySelector('#next').onclick=()=>socket.emit('next'); document.querySelector('#reset').onclick=()=>socket.emit('reset');
+const socket = io();
+
+const code = window.location.pathname
+    .split('/')
+    .pop()
+    .toUpperCase();
+
+const lobby = document.getElementById('lobby');
+const game = document.getElementById('game');
+const finished = document.getElementById('finished');
+const headline = document.getElementById('headline');
+
+/* ========================================
+   JOIN AS HOST
+======================================== */
+
+socket.on('connect', () => {
+    socket.emit('joinGame', {
+        code,
+        role: 'host'
+    });
+});
+
+/* ========================================
+   LOBBY
+======================================== */
+
+document.getElementById('game-code').textContent = code;
+document.getElementById('qr-code').textContent = code;
+document.getElementById('qr-image').src = `/api/qr/${code}`;
+
+/* ========================================
+   HOST CONTROLS
+======================================== */
+
+document.getElementById('start').addEventListener('click', () => {
+    socket.emit('start');
+});
+
+document.getElementById('reveal').addEventListener('click', () => {
+    socket.emit('reveal');
+});
+
+document.getElementById('next').addEventListener('click', () => {
+    socket.emit('next');
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+    socket.emit('reset');
+});
+
+/* ========================================
+   LIVE GAME STATE
+======================================== */
+
+socket.on('gameState', state => {
+    lobby.classList.toggle('hidden', state.status !== 'lobby');
+    game.classList.toggle('hidden', state.status !== 'playing');
+    finished.classList.toggle('hidden', state.status !== 'finished');
+
+    if (state.status === 'lobby') {
+        showLobby(state);
+        return;
+    }
+
+    if (state.status === 'finished') {
+        showFinalResults(state);
+        return;
+    }
+
+    showQuestion(state);
+});
+
+function showLobby(state) {
+    headline.textContent = 'JOIN THE GAME';
+
+    document.getElementById('lobby-status').textContent =
+        `${state.playerCount} PLAYER${state.playerCount === 1 ? '' : 'S'} JOINED`;
+}
+
+function showQuestion(state) {
+    headline.textContent = 'WOULD YOU RATHER?';
+
+    document.getElementById('question-status').textContent =
+        `QUESTION ${state.questionNumber} OF ${state.questionCount}`;
+
+    document.getElementById('a-text').textContent = state.question.a;
+    document.getElementById('b-text').textContent = state.question.b;
+
+    document.getElementById('answer-status').textContent =
+        `${state.total} ANSWER${state.total === 1 ? '' : 'S'} RECEIVED`;
+
+    const aPercent = document.getElementById('a-percent');
+    const bPercent = document.getElementById('b-percent');
+    const aFill = document.getElementById('a-fill');
+    const bFill = document.getElementById('b-fill');
+
+    if (state.revealed) {
+        aPercent.textContent = `${state.aPct}%`;
+        bPercent.textContent = `${state.bPct}%`;
+        aFill.style.width = `${state.aPct}%`;
+        bFill.style.width = `${state.bPct}%`;
+        return;
+    }
+
+    aPercent.textContent = '';
+    bPercent.textContent = '';
+    aFill.style.width = '0%';
+    bFill.style.width = '0%';
+}
+
+function showFinalResults(state) {
+    headline.textContent = 'HOW ALIKE WERE WE?';
+
+    const summary = state.groupSummary;
+
+    if (!summary) {
+        return;
+    }
+
+    document.getElementById('agreed-choice').textContent =
+        summary.mostAgreed.winningChoice;
+
+    document.getElementById('agreed-percent').textContent =
+        `${summary.mostAgreed.highPercent}% chose it`;
+
+    document.getElementById('closest-options').textContent =
+        `${summary.closest.a} ${summary.closest.aPct}%  /  ${summary.closest.b} ${summary.closest.bPct}%`;
+}
+
+/* ========================================
+   ERRORS
+======================================== */
+
+socket.on('gameError', error => {
+    headline.textContent = error;
+});

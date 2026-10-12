@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Either Live - Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <main class="admin-wrap">
+        <div class="eyebrow">EITHER LIVE</div>
+        <h1 class="admin-title">Question Manager</h1>
+
+        <section class="admin-panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Question Sets</h2>
+                    <p>Create a set, add questions, then launch a live game.</p>
+                </div>
+                <form id="new-set-form" class="inline-form">
+                    <input id="new-set-name" type="text" placeholder="New set name" required>
+                    <button class="primary" type="submit">Create Set</button>
+                </form>
+            </div>
+            <div id="sets" class="set-list"></div>
+        </section>
+
+        <section id="editor" class="admin-panel hidden">
+            <div class="panel-heading">
+                <div>
+                    <div class="eyebrow">EDITING SET</div>
+                    <h2 id="set-title"></h2>
+                </div>
+                <button id="launch-game" class="primary" type="button">Create Live Game</button>
+            </div>
+
+            <form id="new-question-form" class="question-form">
+                <input id="option-a" type="text" placeholder="Option A" required>
+                <div class="or-label">OR</div>
+                <input id="option-b" type="text" placeholder="Option B" required>
+                <button class="secondary" type="submit">Add Question</button>
+            </form>
+
+            <div id="questions" class="question-list"></div>
+        </section>
+
+        <p id="admin-message" class="admin-message"></p>
+    </main>
+    <script src="/js/admin.js"></script>
+</body>
+</html>

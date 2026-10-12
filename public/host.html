@@ -1,2 +1,199 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Either Live - Host</title><link rel="stylesheet" href="/css/style.css"></head>
-<body><main class="wrap"><div class="eyebrow" id="progress"></div><h1>WOULD YOU RATHER?</h1><section class="choices"><div class="choice"><span id="aText"></span><div class="bar"><div class="fill" id="aBar"></div></div><div class="percent" id="aPct"></div></div><div class="choice"><span id="bText"></span><div class="bar"><div class="fill" id="bBar"></div></div><div class="percent" id="bPct"></div></div></section><div class="status" id="status">Waiting for answers...</div><div class="controls"><button class="primary" id="reveal">REVEAL RESULTS</button><button class="secondary" id="next">NEXT QUESTION</button><button class="secondary" id="reset">RESET VOTES</button></div><aside class="qr"><img id="qr"><strong id="code"></strong><small>Scan to vote</small></aside></main><script src="/socket.io/socket.io.js"></script><script src="/js/host.js"></script></body></html>
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Either Live - Host</title>
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
+</head>
+
+<body>
+    <main class="wrap">
+
+        <div class="eyebrow">
+            EITHER LIVE
+        </div>
+
+        <h1 id="headline">
+            JOIN THE GAME
+        </h1>
+
+        <!-- =====================================
+             LOBBY
+        ====================================== -->
+
+        <section id="lobby">
+            <div class="lobby-code-label">
+                GAME CODE
+            </div>
+
+            <div
+                id="game-code"
+                class="game-code"
+            ></div>
+
+            <p
+                id="lobby-status"
+                class="status"
+            >
+                0 PLAYERS JOINED
+            </p>
+
+            <button
+                id="start"
+                class="primary"
+                type="button"
+            >
+                START GAME
+            </button>
+        </section>
+
+        <!-- =====================================
+             ACTIVE GAME
+        ====================================== -->
+
+        <section
+            id="game"
+            class="hidden"
+        >
+            <div
+                id="question-status"
+                class="status"
+            ></div>
+
+            <div class="choices">
+                <div class="choice">
+                    <div id="a-text"></div>
+
+                    <div class="bar">
+                        <div
+                            id="a-fill"
+                            class="fill"
+                        ></div>
+                    </div>
+
+                    <div
+                        id="a-percent"
+                        class="percent"
+                    ></div>
+                </div>
+
+                <div class="choice">
+                    <div id="b-text"></div>
+
+                    <div class="bar">
+                        <div
+                            id="b-fill"
+                            class="fill"
+                        ></div>
+                    </div>
+
+                    <div
+                        id="b-percent"
+                        class="percent"
+                    ></div>
+                </div>
+            </div>
+
+            <div
+                id="answer-status"
+                class="status"
+            ></div>
+
+            <div class="controls">
+                <button
+                    id="reveal"
+                    class="primary"
+                    type="button"
+                >
+                    REVEAL RESULTS
+                </button>
+
+                <button
+                    id="next"
+                    class="secondary"
+                    type="button"
+                >
+                    NEXT QUESTION
+                </button>
+
+                <button
+                    id="reset"
+                    class="secondary"
+                    type="button"
+                >
+                    RESET VOTES
+                </button>
+            </div>
+        </section>
+
+        <!-- =====================================
+             FINAL GROUP RESULTS
+        ====================================== -->
+
+        <section
+            id="finished"
+            class="final-results hidden"
+        >
+            <div class="final-result-card">
+                <div class="eyebrow">
+                    MOST AGREED UPON
+                </div>
+
+                <h2 id="agreed-choice"></h2>
+
+                <p id="agreed-percent"></p>
+            </div>
+
+            <div class="final-result-card">
+                <div class="eyebrow">
+                    CLOSEST CALL
+                </div>
+
+                <h2 id="closest-options"></h2>
+            </div>
+
+            <p class="status">
+                Check your phone to see how your answers compared.
+            </p>
+
+            <a
+                class="button-link primary"
+                href="/admin"
+            >
+                BACK TO ADMIN
+            </a>
+        </section>
+
+        <!-- QR code stays visible during the game -->
+        <div class="qr">
+            <img
+                id="qr-image"
+                alt="QR code to join game"
+            >
+
+            <strong>
+                SCAN TO PLAY
+            </strong>
+
+            <span id="qr-code"></span>
+        </div>
+
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/host.js"></script>
+</body>
+
+</html>

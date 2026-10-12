@@ -3,7 +3,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -17,78 +16,84 @@
         rel="stylesheet"
         href="/css/style.css"
     >
-
 </head>
 
-
 <body>
-
-
     <main class="screen">
 
-
-        <!-- Header -->
         <div class="eyebrow">
             EITHER LIVE
         </div>
 
-
-        <h1>
+        <h1 id="player-headline">
             WOULD YOU RATHER?
         </h1>
 
+        <section id="player-game">
+            <div
+                id="progress"
+                class="status"
+            >
+                JOINING GAME...
+            </div>
 
-        <!-- Question Number -->
-        <div
-            id="progress"
-            class="status"
+            <p id="message">
+                Look at the big screen.
+            </p>
+
+            <div class="choices">
+                <button
+                    id="a"
+                    class="choice"
+                    type="button"
+                    disabled
+                >
+                    Waiting...
+                </button>
+
+                <button
+                    id="b"
+                    class="choice"
+                    type="button"
+                    disabled
+                >
+                    Waiting...
+                </button>
+            </div>
+        </section>
+
+        <section
+            id="personal-results"
+            class="personal-results hidden"
         >
-            QUESTION
-        </div>
+            <p class="results-intro">
+                See how your choices compared with everyone else.
+            </p>
 
+            <div id="personal-results-list"></div>
 
-        <!-- Player Message -->
-        <p id="message">
-            Choose one.
-        </p>
+            <div class="overall-result">
+                <div class="eyebrow">
+                    OVERALL
+                </div>
 
+                <div
+                    id="overall-percent"
+                    class="overall-percent"
+                ></div>
 
-        <!-- Answer Buttons -->
-        <div class="choices">
+                <p id="overall-copy"></p>
+            </div>
 
-
-            <button
-                id="a"
-                class="choice"
-                type="button"
-            >
-                Loading...
-            </button>
-
-
-            <button
-                id="b"
-                class="choice"
-                type="button"
-            >
-                Loading...
-            </button>
-
-
-        </div>
-
+            <p class="thanks-message">
+                Thanks for playing!
+            </p>
+        </section>
 
     </main>
 
-
-    <!-- Socket.IO -->
     <script src="/socket.io/socket.io.js"></script>
-
-
-    <!-- Player JavaScript -->
     <script src="/js/player.js"></script>
-
-
 </body>
 
 </html>
