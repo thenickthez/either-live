@@ -49,3 +49,16 @@ Set `PUBLIC_URL` to the public HTTPS URL of the app if the QR code should point 
 - No winners, rankings, or points are used.
 
 Player answers are held in server memory for the active game and are not permanently stored in SQLite.
+
+
+## Railway / Production Database
+
+The app supports a persistent SQLite database location through the `DATABASE_PATH` environment variable.
+
+For Railway with a volume mounted at `/data`, set:
+
+```text
+DATABASE_PATH=/data/either.db
+```
+
+If `DATABASE_PATH` is not set, local development continues to use `database/either.db`.
