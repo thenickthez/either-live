@@ -14,16 +14,129 @@ const PORT = process.env.PORT || 3000;
 const liveGames = new Map();
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: false }));
+
+/* ========================================
+   ADMIN AUTHENTICATION
+======================================== */
+
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+const AUTH_SECRET = process.env.AUTH_SECRET || ADMIN_PASSWORD;
+
+function parseCookies(req) {
+    return Object.fromEntries(
+        String(req.headers.cookie || '')
+            .split(';')
+            .map(cookie => cookie.trim())
+            .filter(Boolean)
+            .map(cookie => {
+                const index = cookie.indexOf('=');
+                return [
+                    decodeURIComponent(cookie.slice(0, index)),
+                    decodeURIComponent(cookie.slice(index + 1))
+                ];
+            })
+    );
+}
+
+function adminToken() {
+    if (!AUTH_SECRET) {
+        return '';
+    }
+
+    return crypto
+        .createHmac('sha256', AUTH_SECRET)
+        .update('either-live-admin')
+        .digest('hex');
+}
+
+function isAdmin(req) {
+    const cookies = parseCookies(req);
+    const expected = adminToken();
+    const received = cookies.either_admin || '';
+
+    if (!expected || expected.length !== received.length) {
+        return false;
+    }
+
+    return crypto.timingSafeEqual(
+        Buffer.from(expected),
+        Buffer.from(received)
+    );
+}
+
+function requireAdmin(req, res, next) {
+    if (isAdmin(req)) {
+        return next();
+    }
+
+    if (req.path.startsWith('/api/')) {
+        return res.status(401).json({ error: 'Admin login required.' });
+    }
+
+    return res.redirect('/login');
+}
+
+app.get('/login', (req, res) => {
+    if (isAdmin(req)) {
+        return res.redirect('/admin');
+    }
+
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+app.post('/login', (req, res) => {
+    if (!ADMIN_PASSWORD) {
+        return res.status(503).send('ADMIN_PASSWORD is not configured.');
+    }
+
+    const submitted = String(req.body.password || '');
+    const valid = submitted.length === ADMIN_PASSWORD.length &&
+        crypto.timingSafeEqual(Buffer.from(submitted), Buffer.from(ADMIN_PASSWORD));
+
+    if (!valid) {
+        return res.redirect('/login?error=1');
+    }
+
+    const secure = req.secure || req.headers['x-forwarded-proto'] === 'https';
+    const cookie = [
+        `either_admin=${encodeURIComponent(adminToken())}`,
+        'Path=/',
+        'HttpOnly',
+        'SameSite=Lax',
+        'Max-Age=28800',
+        secure ? 'Secure' : ''
+    ].filter(Boolean).join('; ');
+
+    res.setHeader('Set-Cookie', cookie);
+    return res.redirect('/admin');
+});
+
+app.post('/logout', (req, res) => {
+    res.setHeader(
+        'Set-Cookie',
+        'either_admin=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0'
+    );
+    res.redirect('/login');
+});
+
+app.get('/admin.html', (req, res) => res.redirect('/admin'));
+app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
 app.get('/', (req, res) => res.redirect('/admin'));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get('/admin', requireAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
 app.get('/host/:code', (req, res) => res.sendFile(path.join(__dirname, 'public', 'host.html')));
 app.get('/play/:code', (req, res) => res.sendFile(path.join(__dirname, 'public', 'play.html')));
 
 /* ========================================
    ADMIN API
 ======================================== */
+
+app.use('/api/sets', requireAdmin);
+app.use('/api/questions', requireAdmin);
+app.use('/api/games', requireAdmin);
 
 app.get('/api/sets', (req, res) => {
     const sets = db.prepare(`
@@ -368,13 +481,13 @@ function buildGroupSummary(game) {
         (first, second) => second.highPercent - first.highPercent
     )[0];
 
-    const closest = [...ranked].sort(
-        (first, second) => first.difference - second.difference
+    const leastAgreed = [...ranked].sort(
+        (first, second) => first.highPercent - second.highPercent
     )[0];
 
     return {
         mostAgreed,
-        closest
+        leastAgreed
     };
 }
 

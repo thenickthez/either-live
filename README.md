@@ -62,3 +62,14 @@ DATABASE_PATH=/data/either.db
 ```
 
 If `DATABASE_PATH` is not set, local development continues to use `database/either.db`.
+
+
+## Stage 3 production variables
+
+Railway variables:
+
+- `DATABASE_PATH=/data/either.db`
+- `ADMIN_PASSWORD=choose-a-strong-password`
+- `AUTH_SECRET=choose-a-long-random-secret` (recommended; otherwise ADMIN_PASSWORD is used)
+
+Admin login is available at `/login` and `/admin` redirects there when signed out.
