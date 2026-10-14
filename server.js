@@ -548,8 +548,8 @@ function buildGroupSummary(game) {
         .filter(result => result.total > 1)
         .map(result => {
             const matchingPairs =
-                (result.a * (result.a - 1)) +
-                (result.b * (result.b - 1));
+                (result.aVotes * (result.aVotes - 1)) +
+                (result.bVotes * (result.bVotes - 1));
             const possiblePairs = result.total * (result.total - 1);
 
             return possiblePairs
