@@ -64,7 +64,7 @@ DATABASE_PATH=/data/either.db
 If `DATABASE_PATH` is not set, local development continues to use `database/either.db`.
 
 
-## Stage 3 production variables
+## Stage 4 production variables
 
 Railway variables:
 

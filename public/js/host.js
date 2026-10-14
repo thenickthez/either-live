@@ -30,6 +30,9 @@ document.getElementById('game-code').textContent = code;
 document.getElementById('qr-code').textContent = code;
 document.getElementById('qr-image').src = `/api/qr/${code}`;
 
+const joinUrl = `${window.location.origin}/play/${code}`;
+document.getElementById('join-url').textContent = joinUrl;
+
 /* ========================================
    HOST CONTROLS
 ======================================== */
@@ -126,8 +129,62 @@ function showFinalResults(state) {
     document.getElementById('agreed-percent').textContent =
         `${summary.mostAgreed.highPercent}% chose it`;
 
-document.getElementById('least-options').textContent =
+    document.getElementById('least-options').textContent =
         `${summary.leastAgreed.a} ${summary.leastAgreed.aPct}%  /  ${summary.leastAgreed.b} ${summary.leastAgreed.bPct}%`;
+
+    document.getElementById('overall-alike').textContent =
+        `${summary.overallAlikePercent}%`;
+
+    document.getElementById('alike-statement').textContent =
+        getAlikeStatement(summary.overallAlikePercent);
+}
+
+function getAlikeStatement(percent) {
+    const low = [
+        'You would not survive a crisis together.',
+        'Try not to get stuck in an elevator with these people.',
+        "Look to your left. Look to your right. These people don't think like you.",
+        'It is important to accept our differences — and maybe celebrate them too.',
+        'Picking a group restaurant is going to take a while.',
+        'Your group chat probably has at least three separate arguments happening right now.',
+        'Team-building exercise recommended. Possibly several.',
+        'You agree on one thing: you definitely do not agree.'
+    ];
+
+    const middle = [
+        'Some of you should start dating, but it may end in divorce.',
+        'It is a cup-half-empty / cup-half-full kind of crowd.',
+        'There are two types of people in this world. You are them!',
+        'Different enough to be interesting. Alike enough to share a table.',
+        'You could road-trip together, but somebody is definitely controlling the playlist.',
+        'A healthy mix of agreement, disagreement, and questionable opinions.',
+        'You would make a great committee — which may or may not be a compliment.',
+        'You agree just enough to keep things interesting.'
+    ];
+
+    const high = [
+        'Extroverts and introverts together, living in harmony.',
+        'Everyone here is so alike, someone should kiss.',
+        "Great job! Let's all go get pizza. I am buying.",
+        'So alike, so smart, so handsome. We should start a podcast together.',
+        'At this point, you may all be sharing one brain.',
+        'Group vacation approved. Choosing the itinerary should be easy.',
+        'You found your people. This is getting suspicious.',
+        'Same wavelength. Same vibe. Probably the same pizza toppings.'
+    ];
+
+    const statements = percent < 33
+        ? low
+        : percent < 66
+            ? middle
+            : high;
+
+    const index = Math.abs(code.split('').reduce(
+        (sum, character) => sum + character.charCodeAt(0),
+        percent
+    )) % statements.length;
+
+    return statements[index];
 }
 
 /* ========================================

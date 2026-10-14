@@ -257,6 +257,65 @@ app.delete('/api/questions/:id', (req, res) => {
     res.json({ ok: true });
 });
 
+app.post('/api/questions/:id/move', (req, res) => {
+    const direction = String(req.body.direction || '').toLowerCase();
+
+    if (!['up', 'down'].includes(direction)) {
+        return res.status(400).json({ error: 'Direction must be up or down.' });
+    }
+
+    const question = db.prepare(`
+        SELECT *
+        FROM questions
+        WHERE id = ?
+    `).get(req.params.id);
+
+    if (!question) {
+        return res.status(404).json({ error: 'Question not found.' });
+    }
+
+    const neighbor = direction === 'up'
+        ? db.prepare(`
+            SELECT *
+            FROM questions
+            WHERE set_id = ?
+              AND (sort_order < ? OR (sort_order = ? AND id < ?))
+            ORDER BY sort_order DESC, id DESC
+            LIMIT 1
+        `).get(question.set_id, question.sort_order, question.sort_order, question.id)
+        : db.prepare(`
+            SELECT *
+            FROM questions
+            WHERE set_id = ?
+              AND (sort_order > ? OR (sort_order = ? AND id > ?))
+            ORDER BY sort_order ASC, id ASC
+            LIMIT 1
+        `).get(question.set_id, question.sort_order, question.sort_order, question.id);
+
+    if (!neighbor) {
+        return res.json({ ok: true });
+    }
+
+    const temporaryOrder = -1000000 - Number(question.id);
+
+    db.exec('BEGIN');
+
+    try {
+        db.prepare('UPDATE questions SET sort_order = ? WHERE id = ?')
+            .run(temporaryOrder, question.id);
+        db.prepare('UPDATE questions SET sort_order = ? WHERE id = ?')
+            .run(question.sort_order, neighbor.id);
+        db.prepare('UPDATE questions SET sort_order = ? WHERE id = ?')
+            .run(neighbor.sort_order, question.id);
+        db.exec('COMMIT');
+    } catch (error) {
+        db.exec('ROLLBACK');
+        throw error;
+    }
+
+    res.json({ ok: true });
+});
+
 app.post('/api/games', (req, res) => {
     const setId = Number(req.body.set_id);
     const set = db.prepare(
@@ -485,9 +544,30 @@ function buildGroupSummary(game) {
         (first, second) => first.highPercent - second.highPercent
     )[0];
 
+    const similarityScores = completed
+        .filter(result => result.total > 1)
+        .map(result => {
+            const matchingPairs =
+                (result.a * (result.a - 1)) +
+                (result.b * (result.b - 1));
+            const possiblePairs = result.total * (result.total - 1);
+
+            return possiblePairs
+                ? (matchingPairs / possiblePairs) * 100
+                : 0;
+        });
+
+    const overallAlikePercent = similarityScores.length
+        ? Math.round(
+            similarityScores.reduce((sum, score) => sum + score, 0) /
+            similarityScores.length
+        )
+        : 100;
+
     return {
         mostAgreed,
-        leastAgreed
+        leastAgreed,
+        overallAlikePercent
     };
 }
 

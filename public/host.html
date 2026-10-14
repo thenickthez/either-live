@@ -58,6 +58,22 @@
             >
                 START GAME
             </button>
+
+            <div class="lobby-qr">
+                <img
+                    id="qr-image"
+                    alt="QR code to join game"
+                >
+
+                <strong>SCAN TO PLAY</strong>
+
+                <span id="qr-code"></span>
+
+                <div
+                    id="join-url"
+                    class="join-url"
+                ></div>
+            </div>
         </section>
 
         <!-- =====================================
@@ -147,6 +163,12 @@
             id="finished"
             class="final-results hidden"
         >
+            <div class="alike-score">
+                <div class="eyebrow">OVERALL GROUP ALIKENESS</div>
+                <div id="overall-alike" class="alike-percent">0%</div>
+                <p id="alike-statement" class="alike-statement"></p>
+            </div>
+
             <div class="final-result-card">
                 <div class="eyebrow">
                     MOST AGREED UPON
@@ -177,19 +199,6 @@
             </a>
         </section>
 
-        <!-- QR code stays visible during the game -->
-        <div class="qr">
-            <img
-                id="qr-image"
-                alt="QR code to join game"
-            >
-
-            <strong>
-                SCAN TO PLAY
-            </strong>
-
-            <span id="qr-code"></span>
-        </div>
 
     </main>
 

@@ -71,9 +71,15 @@ async function loadQuestions() {
                 <span>OR</span>
                 <strong>${escapeHtml(question.option_b)}</strong>
             </div>
+            <div class="question-order-controls">
+                <button class="small-button move-up" type="button" ${index === 0 ? 'disabled' : ''} aria-label="Move question up">↑</button>
+                <button class="small-button move-down" type="button" ${index === questions.length - 1 ? 'disabled' : ''} aria-label="Move question down">↓</button>
+            </div>
             <button class="small-button edit" type="button">Edit</button>
             <button class="small-button danger delete" type="button">Delete</button>
         `;
+        row.querySelector('.move-up').onclick = () => moveQuestion(question.id, 'up');
+        row.querySelector('.move-down').onclick = () => moveQuestion(question.id, 'down');
         row.querySelector('.edit').onclick = () => editQuestion(question);
         row.querySelector('.delete').onclick = () => deleteQuestion(question.id);
         questionsEl.appendChild(row);
@@ -103,6 +109,15 @@ async function deleteSet(id, name) {
     } catch (error) {
         message(error.message);
     }
+}
+
+async function moveQuestion(id, direction) {
+    await api(`/api/questions/${id}/move`, {
+        method: 'POST',
+        body: JSON.stringify({ direction })
+    });
+
+    await loadQuestions();
 }
 
 async function editQuestion(question) {
